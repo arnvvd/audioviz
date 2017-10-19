@@ -1,4 +1,6 @@
-export default class Particle {
+import { colorManager } from '../utils/colorManager'
+
+export default class GridParticle {
 
     constructor(ctx, options) {
         this.ctx = ctx;
@@ -7,7 +9,7 @@ export default class Particle {
         this.radius = options.radius || 10;
         this.scale = options.scale || 1;
         this.color = options.color || 'blue';
-        this.opacity = 0.5;
+        this.opacity = options.opacity || 0;
         this.active = false;
         // Update
         this.angle = options.angle || 0;
@@ -24,14 +26,19 @@ export default class Particle {
         this.ctx.translate(this.position[0], this.position[1]);
         this.ctx.scale(this.scale, this.scale);
         this.ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-        this.ctx.fillStyle = "rgba(255, 0, 0," + this.opacity + ")";
+        this.ctx.fillStyle = `rgba(${colorManager.currentColor.color[1][0]}, ${colorManager.currentColor.color[1][1]}, ${colorManager.currentColor.color[1][2]}, ${this.opacity})`;
         this.ctx.fill();
         this.ctx.closePath();
         this.ctx.restore();
     }
 
-    updateFromDistance(distance, threshold) {
-        this.opacity = 1 - distance / threshold;
+    setActive(distance, threshold) {
+        this.opacity = 1;
+        this.active = true
+    }
+
+    resetActive() {
+        this.opacity = 0.1;
     }
 
     update() {

@@ -1,8 +1,9 @@
 * {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
-audio {
-  /*display: none;*/
+body {
+    overflow: hidden;
+    background-color: #313131;
 }

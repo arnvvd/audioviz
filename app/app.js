@@ -1,16 +1,13 @@
 import Dat from 'dat-gui';
 import NumberUtils from './utils/number-utils';
 import {vec2} from 'gl-matrix';
+import { colorManager } from './utils/colorManager';
 
 /* IMPORT CLASSES */
-import AudioManager from './utils/audioManager'
+import AudioController from './controllers/audioController'
 import WaveController from './controllers/waveController'
 import GridController from './controllers/gridController'
-
-/* IMPORT SHAPES */
-import Particle from './shapes/particle'
-
-const COLORS = ['red', 'blue', 'green', '#2d335b', '#535b2d', '#494949', '#d7d7d7', '#9ad4ce'];
+import Background from './shapes/background'
 
 export default class App {
 
@@ -26,6 +23,7 @@ export default class App {
 
         this.initCanvas();
         this.initAudio();
+        this.initBackground();
         this.initGrid();
         this.initWaves();
         this.bindEvents();
@@ -54,7 +52,7 @@ export default class App {
      * initAudio
      */
     initAudio() {
-        this.audioManager = new AudioManager({
+        this.audioManager = new AudioController({
             audioSrc: '../sound/drive-me-crazy.mp3',
             kickParams: {
                 timestamp: 0,
@@ -65,12 +63,23 @@ export default class App {
             snareParams: {
                 timestamp: 0,
                 averageThresold: 98,
-                timeThresold: 110,
+                timeThresold: 250,
                 isPlaying: false
             }
         })
     }
 
+
+  /**
+   * initBackground
+   */
+  initBackground() {
+      this.background = new Background(this.ctx, {
+          position: [0, 0],
+          width: this.width,
+          height: this.height
+      });
+  }
 
     /**
      * initWaves
@@ -105,11 +114,7 @@ export default class App {
      * Render
      */
     render() {
-        this.particle = new Particle(this.ctx, {
-            position: vec2.fromValues(this.width / 2, this.height / 2),
-            radius: 100,
-            amplitude: 100
-        });
+
     }
 
   /**
@@ -161,23 +166,22 @@ export default class App {
               this.audioManager.snareAverage,
               this.audioManager.snareParams,
               () => {
+                  colorManager.changeCurrentColor();
                   this.gridController.setNewCurrentPattern();
-                  this.particle.color = COLORS[Math.floor(Math.random() * COLORS.length)];
               }
             );
 
         }
+
+
+        // BACKGROUND
+        this.background.update();
 
         // WAVE CONTROLLER
         this.waveController.update();
 
         // GRID CONTROLLER
         this.gridController.update();
-
-        // PARTICLE
-        // Update Position
-        this.particle.update();
-
 
         // RAF
         this.raf = requestAnimationFrame(this.update.bind(this));

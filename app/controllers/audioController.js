@@ -1,4 +1,4 @@
-import ArrayUtils from './array-utils'
+import ArrayUtils from '../utils/array-utils'
 
 export default class AudioManager {
 

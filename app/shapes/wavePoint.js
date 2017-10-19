@@ -1,4 +1,4 @@
-export default class Point {
+export default class WavePoint {
 
   constructor(ctx, options) {
     this.ctx = ctx;
@@ -42,11 +42,9 @@ export default class Point {
 
     this.noisePosition = this.noise.noise3D(this.trigo[0] * 2, this.trigo[1], this.wavesTimestamp) * this.waveAmplitude;
 
-    let step = this.waveWidth / this.wavePointsLength;
-    let marginToCenter = (window.innerWidth - this.waveWidth) / 2 + step / 2;
-
+    let marginToCenter = (window.innerWidth - this.waveWidth) / 2;
     this.position[0] = this.waveWidth / this.wavePointsLength * this.rank + marginToCenter;
-    this.position[1] = this.noisePosition * this.trigo[1] - this.waveAmplitude / 2;
+    this.position[1] = this.noisePosition * this.trigo[1];
   }
 
 
@@ -58,7 +56,7 @@ export default class Point {
 
     // Target Position
     let tx = this.position[0];
-    let ty = this.waveHeight + this.waveAmplitude / 2;
+    let ty = this.position[1] + this.waveHeight + this.waveHeight / 2;
     this.targetPosition = [tx, ty];
   }
 
@@ -68,8 +66,6 @@ export default class Point {
     this.ctx.beginPath();
     this.ctx.translate(this.position[0], this.position[1]);
     this.ctx.arc(0, 0, 4, 0, Math.PI * 2);
-    this.ctx.strokeStyle = this.color;
-    //this.ctx.fill();
     this.ctx.closePath();
     this.ctx.restore();
   }

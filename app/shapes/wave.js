@@ -1,4 +1,4 @@
-import Point from './point';
+import WavePoint from './wavePoint';
 
 export default class Wave {
   constructor(ctx, options) {
@@ -23,10 +23,10 @@ export default class Wave {
     // Loop
     for ( var i = 0; i < this.quantity; i++) {
       // New Point
-      let point = new Point(this.ctx, {
+      let point = new WavePoint(this.ctx, {
         rank: i,
         angle: this.step * i,
-        color: 'black',
+        color: 'blue',
         wavesTimestamp: this.timestamp,
         wavePointsLength: this.quantity,
         waveAmplitude: this.amplitude,

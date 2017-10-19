@@ -1,7 +1,6 @@
 import {vec2} from 'gl-matrix';
-import Particle from '../shapes/particle';
+import GridParticle from '../shapes/gridParticle';
 
-const COLORS = ['red', 'blue', 'green', '#2d335b', '#535b2d', '#494949', '#d7d7d7', '#9ad4ce'];
 
 export default class gridController {
   constructor(ctx, options) {
@@ -14,7 +13,6 @@ export default class gridController {
     this.positions = [];
     this.wavesArr = [];
     this.distanceThresold = 50;
-    this.currentColor = "blue";
 
     // Patterns
     this.patterns = [];
@@ -62,28 +60,28 @@ export default class gridController {
   }
 
   setParticlePattern(position) {
-    let particle = new Particle(this.ctx, {
+    let particle = new GridParticle(this.ctx, {
       position: vec2.fromValues(position.x, position.y),
-      radius: 10,
-      amplitude: 100
+      radius: 6,
+      amplitude: 100,
+      opacity: 0.3
     });
     // Push
     this.particlePattern.data.push(particle);
   }
 
   setLinePattern(position) {
-    let line = new Particle(this.ctx, {
+    let line = new GridParticle(this.ctx, {
       position: vec2.fromValues(position.x, position.y),
-      radius: 3,
-      amplitude: 100
+      radius: 4,
+      amplitude: 100,
+      opacity: 0.3
     });
     // Push
     this.linePattern.data.push(line);
   }
 
   setNewCurrentPattern() {
-    // A RANGER
-    this.currentColor = COLORS[Math.floor(Math.random() * COLORS.length)];
 
     let nextPatterns = this.patterns.filter((pattern) => {
       return pattern.isActive != true;
@@ -103,19 +101,18 @@ export default class gridController {
 
 
   calcDistanceWithWavesPoints(el) {
-    //console.log(this.wavesArr.length);
+
     for (let i = 0; i < this.wavesArr.length; i++) {
       for (let j = 0; j < this.wavesArr[i].pointsArr.length; j++){
 
         let point = this.wavesArr[i].pointsArr[j];
         let distance = Math.sqrt(Math.pow(point.position[0] - el.position[0], 2) + Math.pow(point.position[1] - el.position[1] , 2));
-        //console.log(distance);
+
         if(el.active === false) {
           if (distance < this.distanceThresold) {
-            el.opacity = 1 - distance / this.distanceThresold;
-            el.active = true
+            el.setActive(distance, this.distanceThresold);
           } else {
-            el.opacity = .1;
+            el.resetActive();
           }
         }
       }
