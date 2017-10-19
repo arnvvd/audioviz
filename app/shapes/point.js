@@ -36,13 +36,16 @@ export default class Point {
 
   calcPosition() {
     this.trigo = [
-      Math.cos(this.angle) / 2.5,
-      Math.sin(this.angle) / 2.5
+      Math.cos(this.angle) / 2,
+      Math.sin(this.angle) / 2
     ];
 
-    this.noisePosition = this.noise.noise3D(this.trigo[0], this.trigo[1], this.wavesTimestamp / 2) * this.waveAmplitude;
+    this.noisePosition = this.noise.noise3D(this.trigo[0] * 2, this.trigo[1], this.wavesTimestamp) * this.waveAmplitude;
 
-    this.position[0] = this.waveWidth / this.wavePointsLength * this.rank;
+    let step = this.waveWidth / this.wavePointsLength;
+    let marginToCenter = (window.innerWidth - this.waveWidth) / 2 + step / 2;
+
+    this.position[0] = this.waveWidth / this.wavePointsLength * this.rank + marginToCenter;
     this.position[1] = this.noisePosition * this.trigo[1] - this.waveAmplitude / 2;
   }
 
@@ -66,7 +69,7 @@ export default class Point {
     this.ctx.translate(this.position[0], this.position[1]);
     this.ctx.arc(0, 0, 4, 0, Math.PI * 2);
     this.ctx.strokeStyle = this.color;
-    this.ctx.stroke();
+    //this.ctx.fill();
     this.ctx.closePath();
     this.ctx.restore();
   }

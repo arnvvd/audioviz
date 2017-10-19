@@ -9,8 +9,8 @@ export default class waveController {
     // Params
     this.width = options.width;
     this.height = options.height;
-    this.wavesPointsLength = 20;
-    this.wavesAmplitude = 300;
+    this.wavesPointsLength = 30;
+    this.wavesAmplitude = 400;
     this.wavesTimestamp = 0;
     this.wavesArr = [];
 
@@ -33,7 +33,6 @@ export default class waveController {
 
   removeWave() {
     this.wavesArr = this.wavesArr.slice(1, this.wavesArr.length);
-    //console.log(this.wavesArr);
   }
 
   update() {

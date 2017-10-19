@@ -8,10 +8,12 @@ export default class gridController {
     this.ctx = ctx;
 
     // Grid
-    this.canvasWidth = options.canvasWidth;
-    this.canvasHeight = options.canvasHeight;
-    this.numberByRange = options.numberByRange || 20;
+    this.width = options.width;
+    this.height = options.height;
+    this.numberByRange = options.numberByRange || 30;
     this.positions = [];
+    this.wavesArr = [];
+    this.distanceThresold = 50;
     this.currentColor = "blue";
 
     // Patterns
@@ -36,12 +38,13 @@ export default class gridController {
   }
 
   setGrid() {
-    let step = this.canvasWidth / this.numberByRange;
-    for(let x = 0; x < this.canvasWidth; x += step ){
-      for(let y = 0; y < this.canvasHeight; y += step ){
+    let step = this.width / this.numberByRange;
+
+    for(let x = 0; x < this.width; x += step ){
+      for(let y = 0; y < this.height; y += step ){
         let positionObj = {
-          x: x,
-          y: y
+          x: x + (window.innerWidth - this.width) / 2 + step / 2,
+          y: y +(window.innerHeight - this.height) / 2  + step / 4
         };
         this.positions.push( positionObj )
       }
@@ -79,7 +82,6 @@ export default class gridController {
   }
 
   setNewCurrentPattern() {
-
     // A RANGER
     this.currentColor = COLORS[Math.floor(Math.random() * COLORS.length)];
 
@@ -99,10 +101,38 @@ export default class gridController {
     this.currentPattern = currentPattern;
   }
 
+
+  calcDistanceWithWavesPoints(el) {
+    //console.log(this.wavesArr.length);
+    for (let i = 0; i < this.wavesArr.length; i++) {
+      for (let j = 0; j < this.wavesArr[i].pointsArr.length; j++){
+
+        let point = this.wavesArr[i].pointsArr[j];
+        let distance = Math.sqrt(Math.pow(point.position[0] - el.position[0], 2) + Math.pow(point.position[1] - el.position[1] , 2));
+        //console.log(distance);
+        if(el.active === false) {
+          if (distance < this.distanceThresold) {
+            el.opacity = 1 - distance / this.distanceThresold;
+            el.active = true
+          } else {
+            el.opacity = .1;
+          }
+        }
+      }
+    }
+  }
+
+
+
   update() {
-    this.currentPattern.data.forEach((el) => {
-      el.color = this.currentColor;
-      el.update();
-    })
+
+    for (let i = 0; i < this.currentPattern.data.length; i++) {
+      this.currentPattern.data[i].active = false;
+
+      this.calcDistanceWithWavesPoints(this.currentPattern.data[i]);
+
+      // Affect with distance
+      this.currentPattern.data[i].update();
+    }
   }
 }

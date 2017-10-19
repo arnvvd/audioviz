@@ -7,7 +7,8 @@ export default class Particle {
         this.radius = options.radius || 10;
         this.scale = options.scale || 1;
         this.color = options.color || 'blue';
-
+        this.opacity = 0.5;
+        this.active = false;
         // Update
         this.angle = options.angle || 0;
         this.amplitude = 100;
@@ -17,32 +18,23 @@ export default class Particle {
         }
     }
 
-
     render() {
         this.ctx.save();
         this.ctx.beginPath();
         this.ctx.translate(this.position[0], this.position[1]);
         this.ctx.scale(this.scale, this.scale);
         this.ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-        this.ctx.fillStyle = this.color;
+        this.ctx.fillStyle = "rgba(255, 0, 0," + this.opacity + ")";
         this.ctx.fill();
         this.ctx.closePath();
         this.ctx.restore();
     }
 
-
-    calcPosition() {
-        this.trigo = [
-            Math.sin(this.angle),
-            Math.cos(this.angle)
-        ];
-        this.position[0] = this.originPosition[0] + this.trigo[0] * this.amplitude;
-        //this.position[1] = this.originPosition[1] + this.trigo[1] + this.amplitude;
+    updateFromDistance(distance, threshold) {
+        this.opacity = 1 - distance / threshold;
     }
 
-
     update() {
-        this.calcPosition();
         this.render();
     }
 }

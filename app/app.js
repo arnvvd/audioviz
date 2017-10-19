@@ -77,8 +77,8 @@ export default class App {
      */
     initWaves() {
         this.waveController = new WaveController(this.ctx, {
-            width: this.width,
-            height: this.height
+            width: this.width * .8,
+            height: this.height * .8
         });
     }
 
@@ -87,8 +87,8 @@ export default class App {
      */
     initGrid() {
         this.gridController = new GridController(this.ctx, {
-            canvasWidth: this.width,
-            canvasHeight: this.height
+            width: this.width * .8,
+            height: this.height * .8
         });
     }
 
@@ -152,6 +152,7 @@ export default class App {
               this.audioManager.kickParams,
               () => {
                   this.waveController.addWave();
+                  this.gridController.wavesArr = this.waveController.wavesArr;
               }
             );
 
