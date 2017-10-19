@@ -1,4 +1,4 @@
-export default class Particule {
+export default class Particle {
 
     constructor(ctx, options) {
         this.ctx = ctx;
@@ -43,5 +43,6 @@ export default class Particule {
 
     update() {
         this.calcPosition();
+        this.render();
     }
 }

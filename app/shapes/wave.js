@@ -26,6 +26,7 @@ export default class Wave {
       let point = new Point(this.ctx, {
         rank: i,
         angle: this.step * i,
+        color: 'black',
         wavesTimestamp: this.timestamp,
         wavePointsLength: this.quantity,
         waveAmplitude: this.amplitude,

@@ -9,6 +9,7 @@ export default class Point {
     this.targetPosition = [];
     this.rank = options.rank;
     this.angle = options.angle;
+    this.color = options.color || "blue";
     this.trigo = [];
 
     // Waves Params
@@ -63,8 +64,8 @@ export default class Point {
     this.ctx.save();
     this.ctx.beginPath();
     this.ctx.translate(this.position[0], this.position[1]);
-    this.ctx.arc(0, 0, 1, 0, Math.PI * 2);
-    this.ctx.strokeStyle = "blue";
+    this.ctx.arc(0, 0, 4, 0, Math.PI * 2);
+    this.ctx.strokeStyle = this.color;
     this.ctx.stroke();
     this.ctx.closePath();
     this.ctx.restore();

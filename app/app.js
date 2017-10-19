@@ -5,9 +5,10 @@ import {vec2} from 'gl-matrix';
 /* IMPORT CLASSES */
 import AudioManager from './utils/audioManager'
 import WaveController from './controllers/waveController'
+import GridController from './controllers/gridController'
 
 /* IMPORT SHAPES */
-import Particule from './shapes/particule'
+import Particle from './shapes/particle'
 
 const COLORS = ['red', 'blue', 'green', '#2d335b', '#535b2d', '#494949', '#d7d7d7', '#9ad4ce'];
 
@@ -25,6 +26,7 @@ export default class App {
 
         this.initCanvas();
         this.initAudio();
+        this.initGrid();
         this.initWaves();
         this.bindEvents();
         this.startRAF();
@@ -80,6 +82,16 @@ export default class App {
         });
     }
 
+    /**
+     * initGrid
+     */
+    initGrid() {
+        this.gridController = new GridController(this.ctx, {
+            canvasWidth: this.width,
+            canvasHeight: this.height
+        });
+    }
+
 
     /**
      * bindEvents
@@ -93,7 +105,7 @@ export default class App {
      * Render
      */
     render() {
-        this.particle = new Particule (this.ctx, {
+        this.particle = new Particle(this.ctx, {
             position: vec2.fromValues(this.width / 2, this.height / 2),
             radius: 100,
             amplitude: 100
@@ -148,6 +160,7 @@ export default class App {
               this.audioManager.snareAverage,
               this.audioManager.snareParams,
               () => {
+                  this.gridController.setNewCurrentPattern();
                   this.particle.color = COLORS[Math.floor(Math.random() * COLORS.length)];
               }
             );
@@ -157,11 +170,13 @@ export default class App {
         // WAVE CONTROLLER
         this.waveController.update();
 
+        // GRID CONTROLLER
+        this.gridController.update();
+
         // PARTICLE
         // Update Position
         this.particle.update();
-        // Do Render
-        this.particle.render();
+
 
         // RAF
         this.raf = requestAnimationFrame(this.update.bind(this));

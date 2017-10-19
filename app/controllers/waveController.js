@@ -33,7 +33,7 @@ export default class waveController {
 
   removeWave() {
     this.wavesArr = this.wavesArr.slice(1, this.wavesArr.length);
-    console.log(this.wavesArr);
+    //console.log(this.wavesArr);
   }
 
   update() {
