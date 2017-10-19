@@ -2,8 +2,9 @@ import Dat from 'dat-gui';
 import NumberUtils from './utils/number-utils';
 import {vec2} from 'gl-matrix';
 
-/* IMPORT AUDIO MANAGER */
+/* IMPORT CLASSES */
 import AudioManager from './utils/audioManager'
+import WaveController from './controllers/waveController'
 
 /* IMPORT SHAPES */
 import Particule from './shapes/particule'
@@ -22,9 +23,11 @@ export default class App {
         this.DELTA_TIME = 0;
         this.LAST_TIME = Date.now();
 
-        this.initAudio();
         this.initCanvas();
+        this.initAudio();
+        this.initWaves();
         this.bindEvents();
+        this.startRAF();
     }
 
 
@@ -42,18 +45,6 @@ export default class App {
         // Set Size
         this.canvas.width = this.width;
         this.canvas.height = this.height;
-
-        // Update
-        if(this.updateActive) {
-            // Render
-            this.render();
-            // Do Update
-            this.update();
-        } else {
-            // Cancel RAF
-            cancelAnimationFrame(this.raf);
-        }
-
     }
 
 
@@ -65,7 +56,7 @@ export default class App {
             audioSrc: '../sound/drive-me-crazy.mp3',
             kickParams: {
                 timestamp: 0,
-                averageThresold: 254,
+                averageThresold: 252,
                 timeThresold: 250,
                 isPlaying: false
             },
@@ -80,10 +71,21 @@ export default class App {
 
 
     /**
+     * initWaves
+     */
+    initWaves() {
+        this.waveController = new WaveController(this.ctx, {
+            width: this.width,
+            height: this.height
+        });
+    }
+
+
+    /**
      * bindEvents
      */
     bindEvents() {
-        window.addEventListener( 'resize', this.onResize.bind(this) );
+        window.addEventListener('resize', this.onResize.bind(this) );
     }
 
 
@@ -98,53 +100,70 @@ export default class App {
         });
     }
 
+  /**
+   * Start RAF
+   */
+  startRAF() {
+        // Update
+        if(this.updateActive) {
+            // Render
+            this.render();
+            // Do Update
+            this.update();
+        } else {
+            // Cancel RAF
+            cancelAnimationFrame(this.raf);
+        }
+    }
 
     /**
      * update
      */
     update() {
-        // Clear Canvas
+        // CLEAR CANVAS
         this.ctx.clearRect(0,0, this.width, this.height);
 
-        // Calc DELTA_TIME
+        // CALC DELTA_TIME
         this.DELTA_TIME = Date.now() - this.LAST_TIME;
         this.LAST_TIME = Date.now();
 
-        // Audio Manager
+
+        // AUDIO MANAGER
         if (this.audioManager.canUpdate) {
 
             // Update
             this.audioManager.update();
 
-
             // On Kick
             this.getAudioEvent(
-                this.audioManager.kickAverage,
-                this.audioManager.kickParams,
-                () => {
-                    this.particle.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-                    console.log('kick');
-                }
+              this.audioManager.kickAverage,
+              this.audioManager.kickParams,
+              () => {
+                  this.waveController.addWave();
+              }
             );
 
             // On Snare
             this.getAudioEvent(
-                this.audioManager.snareAverage,
-                this.audioManager.snareParams,
-                () => {
-                    console.log('snare');
-                }
+              this.audioManager.snareAverage,
+              this.audioManager.snareParams,
+              () => {
+                  this.particle.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+              }
             );
 
         }
 
+        // WAVE CONTROLLER
+        this.waveController.update();
 
+        // PARTICLE
         // Update Position
         this.particle.update();
         // Do Render
         this.particle.render();
 
-        // Do RAF
+        // RAF
         this.raf = requestAnimationFrame(this.update.bind(this));
     }
 
