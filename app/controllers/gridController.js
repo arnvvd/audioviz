@@ -1,5 +1,6 @@
 import {vec2} from 'gl-matrix';
 import GridParticle from '../shapes/gridParticle';
+import GridLine from '../shapes/gridLine';
 
 
 export default class gridController {
@@ -12,7 +13,7 @@ export default class gridController {
     this.numberByRange = options.numberByRange || 30;
     this.positions = [];
     this.wavesArr = [];
-    this.distanceThresold = 50;
+    this.distanceThresold = 30;
 
     // Patterns
     this.patterns = [];
@@ -62,8 +63,7 @@ export default class gridController {
   setParticlePattern(position) {
     let particle = new GridParticle(this.ctx, {
       position: vec2.fromValues(position.x, position.y),
-      radius: 6,
-      amplitude: 100,
+      radius: 4,
       opacity: 0.3
     });
     // Push
@@ -71,11 +71,12 @@ export default class gridController {
   }
 
   setLinePattern(position) {
-    let line = new GridParticle(this.ctx, {
+    let line = new GridLine(this.ctx, {
       position: vec2.fromValues(position.x, position.y),
-      radius: 4,
-      amplitude: 100,
-      opacity: 0.3
+      width: 2,
+      height: 20,
+      opacity: 1,
+      rotation: Math.PI / 4
     });
     // Push
     this.linePattern.data.push(line);
