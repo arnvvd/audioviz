@@ -53,12 +53,14 @@ export default class GridLine {
 
   setActive(distance, threshold) {
     this.velocity = 1.5;
+    this.opacity = 1;
     this.rotation = this.rotation + 1;
     this.active = true
   }
 
   resetActive() {
     this.velocity = 1;
+    this.opacity = .5;
     this.rotation = this.initRotation;
   }
 
