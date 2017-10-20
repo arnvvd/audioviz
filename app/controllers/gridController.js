@@ -99,7 +99,7 @@ export default class gridController {
   setParticlePattern(position) {
     let particle = new GridParticle(this.ctx, {
       position: vec2.fromValues(position.x, position.y),
-      radius: 4,
+      radius: 3,
       opacity: 1
     });
     // Push
@@ -111,7 +111,7 @@ export default class gridController {
       position: vec2.fromValues(position.x, position.y),
       width: 2,
       height: 20,
-      opacity: 1,
+      opacity: 0.2,
       rotation: Math.PI / 4
     });
     // Push
@@ -122,7 +122,7 @@ export default class gridController {
     let rect = new GridRect(this.ctx, {
       position: vec2.fromValues(position.x, position.y),
       size: 8,
-      opacity: 0.4
+      opacity: 0.1
     });
     // Push
     this.rectPattern.data.push(rect);

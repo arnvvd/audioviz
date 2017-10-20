@@ -41,9 +41,7 @@ export default class GridPoints {
     this.active = true
   }
 
-  resetActive() {
-    this.scale = this.initScale;
-  }
+  resetActive() {}
 
   update() {
     this.render();

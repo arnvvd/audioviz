@@ -1,7 +1,7 @@
 {
-  "name": "canvas-starter",
+  "name": "sound-and-color",
   "version": "1.0.0",
-  "description": "Inspired by Wiliam Mapan",
+  "description": "Canvas Audio Experiment Workshop - Gobelins x Wiliam Mapan",
   "main": "index.js",
   "scripts": {
     "start": "npm run start:server & npm run watch",

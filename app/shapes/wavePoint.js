@@ -26,7 +26,7 @@ export default class WavePoint {
     this.calcTweenPosition();
 
     // Tween
-    this.easingDuration = options.easingDuration || 2000;
+    this.easingDuration = options.easingDuration || 1500;
     this.currentTime = 0;
     this.now = Date.now();
     this.dt = 16;
@@ -57,7 +57,7 @@ export default class WavePoint {
 
     // Target Position
     let tx = this.position[0];
-    let ty = this.position[1] + this.waveHeight + this.waveHeight / 2;
+    let ty = this.position[1] + this.waveHeight + this.waveAmplitude + this.waveAmplitude / 2;
     this.targetPosition = [tx, ty];
   }
 
@@ -66,7 +66,7 @@ export default class WavePoint {
     this.ctx.save();
     this.ctx.beginPath();
     this.ctx.translate(this.position[0], this.position[1]);
-    this.ctx.arc(0, 0, 4, 0, Math.PI * 2);
+    this.ctx.arc(0, 0, 1, 0, Math.PI * 2);
     //this.ctx.fill();
     this.ctx.closePath();
     this.ctx.restore();

@@ -14,6 +14,7 @@ export default class GridLine {
     this.active = false;
 
     this.initRotation = options.rotation || 0;
+    this.initOpacity = options.opacity || 0.2;
 
     if (this.position) {
       this.render();
@@ -60,7 +61,7 @@ export default class GridLine {
 
   resetActive() {
     this.velocity = 1;
-    this.opacity = .5;
+    this.opacity = .2;
     this.rotation = this.initRotation;
   }
 

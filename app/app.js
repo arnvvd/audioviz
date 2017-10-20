@@ -2,11 +2,16 @@ import debounce from "./utils/debounce";
 import Stats from 'stats.js';
 import { colorManager } from './utils/colorManager';
 
+
+
 /* IMPORT CLASSES */
 import AudioController from './controllers/audioController'
 import WaveController from './controllers/waveController'
 import GridController from './controllers/gridController'
+import MaskController from './controllers/maskController'
 import Background from './shapes/background'
+
+
 
 export default class App {
 
@@ -28,6 +33,7 @@ export default class App {
         document.body.appendChild( this.stats.dom );
 
         this.initCanvas();
+        this.initOffsetCanvas();
         this.initAudio();
         this.render();
         this.bindEvents();
@@ -47,13 +53,27 @@ export default class App {
         // Set context
         this.ctx = this.canvas.getContext('2d');
         // Set Size
-        this.setCanvasWidth();
+        this.setCanvasSize(this.canvas);
     }
 
-    setCanvasWidth() {
+
+    /**
+     * Offset canvas
+     */
+    initOffsetCanvas() {
+        // Create Canvas
+        this.oCanvas = document.createElement('canvas');
+        // Set context
+        this.octx = this.oCanvas.getContext('2d');
         // Set Size
-        this.canvas.width = this.width;
-        this.canvas.height = this.height;
+        this.setCanvasSize(this.oCanvas);
+    }
+
+
+    setCanvasSize(canvas) {
+        // Set Size
+        canvas.width = this.width;
+        canvas.height = this.height;
     }
 
 
@@ -64,6 +84,7 @@ export default class App {
         this.initBackground();
         this.initGrid();
         this.initWaves();
+        this.initMask();
     }
 
     /**
@@ -124,6 +145,19 @@ export default class App {
             maxHeight: this.elementsMaxHeight,
             maxXNumberByRange: 30,
             maxYNumberByRange: 12
+        });
+    }
+
+
+    /**
+     * initMask
+     */
+    initMask() {
+        this.maskController = new MaskController(this.ctx, {
+            width: this.canvas.width,
+            height: this.canvas.height,
+            maxWidth: this.elementsMaxWidth,
+            maxHeight: this.elementsMaxHeight
         });
     }
 
@@ -208,6 +242,7 @@ export default class App {
               this.audioManager.snareParams,
               () => {
                   colorManager.changeCurrentColor();
+                  this.maskController.setNewCurrentMask();
                   this.gridController.setNewCurrentPattern();
               }
             );
@@ -223,6 +258,9 @@ export default class App {
 
         // GRID CONTROLLER
         this.gridController.update();
+
+        // MASK CONTROLLER
+        this.maskController.update();
 
         this.stats.end();
 
@@ -260,7 +298,7 @@ export default class App {
     onResize() {
         // SIZE
         this.calcElementsSizes();
-        this.setCanvasWidth();
+        this.setCanvasSize();
         // RENDER
         this.render();
     }
