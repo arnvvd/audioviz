@@ -122,6 +122,7 @@ export default class AudioManager {
     }
 
 
+    // IN THE FUTURE
     // connectSnareFilter() {
     //     this.snareFilter.connect(this.audioCtx.destination);
     // }

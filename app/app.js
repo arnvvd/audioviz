@@ -9,6 +9,7 @@ import AudioController from './controllers/audioController'
 import WaveController from './controllers/waveController'
 import GridController from './controllers/gridController'
 import MaskController from './controllers/maskController'
+import OffscreenCanvasScene from './shapes/offscreenCanvasScene'
 import Background from './shapes/background'
 
 
@@ -67,6 +68,13 @@ export default class App {
         this.octx = this.oCanvas.getContext('2d');
         // Set Size
         this.setCanvasSize(this.oCanvas);
+        // Init offscreenCanvas
+        this.offscreenCanvasScene = new OffscreenCanvasScene(this.octx, {
+            width: this.width,
+            height: this.height,
+            elWidth: this.elWidth,
+            particleNumber: 50
+        })
     }
 
 
@@ -154,6 +162,8 @@ export default class App {
      */
     initMask() {
         this.maskController = new MaskController(this.ctx, {
+            octx: this.octx,
+            oCanvas: this.oCanvas,
             width: this.canvas.width,
             height: this.canvas.height,
             maxWidth: this.elementsMaxWidth,
@@ -189,6 +199,27 @@ export default class App {
         window.addEventListener('resize', debounce( () => {
             this.onResize()
         }, 100));
+
+
+        document.onkeydown = (e) => {
+
+            e = e || window.event;
+
+            if (e.keyCode == '38') {
+                // up arrow
+            }
+            else if (e.keyCode == '40') {
+                // down arrow
+            }
+            else if (e.keyCode == '37') {
+                this.offscreenCanvasScene.playLines(!this.offscreenCanvasScene.direction)
+
+            }
+            else if (e.keyCode == '39') {
+                this.offscreenCanvasScene.playLines(!this.offscreenCanvasScene.direction)
+            }
+
+        }
     }
 
 
@@ -233,6 +264,8 @@ export default class App {
               () => {
                   this.waveController.addWave();
                   this.gridController.wavesArr = this.waveController.wavesArr;
+                  let dir = !this.offscreenCanvasScene.direction;
+                  this.offscreenCanvasScene.playLines(dir);
               }
             );
 
@@ -244,6 +277,8 @@ export default class App {
                   colorManager.changeCurrentColor();
                   this.maskController.setNewCurrentMask();
                   this.gridController.setNewCurrentPattern();
+                  let dir = !this.offscreenCanvasScene.direction;
+                  this.offscreenCanvasScene.playLines(dir);
               }
             );
 
@@ -260,7 +295,10 @@ export default class App {
         this.gridController.update();
 
         // MASK CONTROLLER
-        this.maskController.update();
+        this.maskController.update(this.audioManager.defaultAverage);
+
+        // MASK ANIMATION
+        this.offscreenCanvasScene.update();
 
         this.stats.end();
 
@@ -298,7 +336,8 @@ export default class App {
     onResize() {
         // SIZE
         this.calcElementsSizes();
-        this.setCanvasSize();
+        this.setCanvasSize(this.canvas);
+        this.setCanvasSize(this.oCanvas);
         // RENDER
         this.render();
     }

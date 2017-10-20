@@ -7,6 +7,8 @@ export default class maskController {
 
     constructor(ctx, options) {
         this.ctx = ctx;
+        this.octx = options.octx;
+        this.oCanvas = options.oCanvas;
 
         this.width = options.width;
         this.height = options.height;
@@ -53,8 +55,7 @@ export default class maskController {
     prepareMasks() {
 
         this.setCircleMask();
-        this.setTriangleMask();
-        this.setTriangleMask();
+        //this.setTriangleMask();
         this.setParallelogramMask();
 
     }
@@ -64,8 +65,10 @@ export default class maskController {
     setCircleMask() {
 
         this.maskCircle.instance = new MaskCircle(this.ctx, {
+            octx: this.octx,
             position: vec2.fromValues(this.width / 2, this.height / 2),
             radius: 100,
+            borderScale: 1.3,
             opacity: 1
         });
 
@@ -78,8 +81,10 @@ export default class maskController {
     setTriangleMask() {
 
         this.maskTriangle.instance = new MaskTriangle(this.ctx, {
+            octx: this.octx,
             position: vec2.fromValues(this.width / 2, this.height / 2),
-            size: 100,
+            size: 200,
+            borderScale: 1.6,
             opacity: 1
         });
 
@@ -91,8 +96,10 @@ export default class maskController {
     setParallelogramMask() {
 
         this.maskParallelogram.instance = new MaskParallelogram(this.ctx, {
+            octx: this.octx,
             position: vec2.fromValues(this.width / 2, this.height / 2),
-            size: 300,
+            size: 200,
+            borderScale: 1.3,
             opacity: 1
         });
 
@@ -124,10 +131,31 @@ export default class maskController {
 
 
 
+    renderClip() {
 
-    update() {
+        //this.ctx.fillRect(0, 0, 200, 200);
+        this.ctx.save();
+        this.ctx.clip();
 
-        this.currentMask.instance.update();
+
+        //this.octx.clearRect(0,0, this.width, this.height);
+        //this.octx.fillStyle = "red";
+        //this.octx.fillRect(0, 0, this.width, this.height);
+
+
+
+        // on dessine oCanvas sur le contexte de base : ctx
+        this.ctx.drawImage(this.oCanvas, 0,0);
+        this.ctx.restore();
+    }
+
+
+
+
+    update(audioAverage) {
+
+        this.currentMask.instance.update(audioAverage);
+        this.renderClip();
 
     }
 }
