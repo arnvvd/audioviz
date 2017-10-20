@@ -10,7 +10,7 @@ export default class OffscreenCanvasScene {
         this.width = options.width;
         this.elWidth = options.elWidth;
         this.height = options.height;
-        this.particleNumber = options.particleNumber;
+        this.particleNumber = 100;
         this.newLinesPosition = {
             x: (this.width - this.elWidth) / 2,
             y: 0
@@ -24,7 +24,7 @@ export default class OffscreenCanvasScene {
 
     initLines() {
         for (let i = 0; i < this.particleNumber; i++) {
-            const radius = (Math.random() * 2) + 1;
+            const radius = (Math.random() * 2) + 2;
             this.lines.push(
                 new OffscreenCanvasLine(this.octx, {
                     width: this.width,

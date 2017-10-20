@@ -9,7 +9,7 @@ import AudioController from './controllers/audioController'
 import WaveController from './controllers/waveController'
 import GridController from './controllers/gridController'
 import MaskController from './controllers/maskController'
-import OffscreenCanvasScene from './shapes/offscreenCanvasScene'
+import OffscreenCanvasScene from './offscreenCanvas/offscreenCanvasScene'
 import Background from './shapes/background'
 
 
@@ -68,13 +68,6 @@ export default class App {
         this.octx = this.oCanvas.getContext('2d');
         // Set Size
         this.setCanvasSize(this.oCanvas);
-        // Init offscreenCanvas
-        this.offscreenCanvasScene = new OffscreenCanvasScene(this.octx, {
-            width: this.width,
-            height: this.height,
-            elWidth: this.elWidth,
-            particleNumber: 50
-        })
     }
 
 
@@ -93,6 +86,7 @@ export default class App {
         this.initGrid();
         this.initWaves();
         this.initMask();
+        this.initOffscreenCanvasScene();
     }
 
     /**
@@ -173,6 +167,22 @@ export default class App {
 
 
     /**
+     * initOffscreenCanvasScene
+     */
+
+    initOffscreenCanvasScene() {
+        // Init offscreenCanvas
+        this.offscreenCanvasScene = new OffscreenCanvasScene(this.octx, {
+            width: this.width,
+            height: this.height,
+            elWidth: this.elWidth
+        });
+    }
+
+
+
+
+    /**
      * Calc Elements Size
      */
     calcElementsSizes() {
@@ -199,27 +209,6 @@ export default class App {
         window.addEventListener('resize', debounce( () => {
             this.onResize()
         }, 100));
-
-
-        document.onkeydown = (e) => {
-
-            e = e || window.event;
-
-            if (e.keyCode == '38') {
-                // up arrow
-            }
-            else if (e.keyCode == '40') {
-                // down arrow
-            }
-            else if (e.keyCode == '37') {
-                this.offscreenCanvasScene.playLines(!this.offscreenCanvasScene.direction)
-
-            }
-            else if (e.keyCode == '39') {
-                this.offscreenCanvasScene.playLines(!this.offscreenCanvasScene.direction)
-            }
-
-        }
     }
 
 
