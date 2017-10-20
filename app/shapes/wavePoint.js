@@ -18,6 +18,7 @@ export default class WavePoint {
     this.waveAmplitude = options.waveAmplitude;
     this.waveWidth = options.waveWidth;
     this.waveHeight = options.waveHeight;
+    this.gapBetweenPoints = options.gapBetweenPoints;
     this.noise = options.noise;
 
     // Calc Position
@@ -42,7 +43,7 @@ export default class WavePoint {
 
     this.noisePosition = this.noise.noise3D(this.trigo[0] * 2, this.trigo[1], this.wavesTimestamp) * this.waveAmplitude;
 
-    let marginToCenter = (window.innerWidth - this.waveWidth) / 2;
+    let marginToCenter = (window.innerWidth - this.waveWidth) / 2 + this.gapBetweenPoints;
     this.position[0] = this.waveWidth / this.wavePointsLength * this.rank + marginToCenter;
     this.position[1] = this.noisePosition * this.trigo[1];
   }
@@ -66,6 +67,7 @@ export default class WavePoint {
     this.ctx.beginPath();
     this.ctx.translate(this.position[0], this.position[1]);
     this.ctx.arc(0, 0, 4, 0, Math.PI * 2);
+    //this.ctx.fill();
     this.ctx.closePath();
     this.ctx.restore();
   }

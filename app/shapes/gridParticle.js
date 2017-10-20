@@ -10,6 +10,8 @@ export default class GridParticle {
         this.opacity = options.opacity || 0;
         this.active = false;
 
+        this.initScale = options.scale || 1;
+
         if (this.position) {
             this.render();
         }
@@ -28,12 +30,13 @@ export default class GridParticle {
     }
 
     setActive(distance, threshold) {
-        this.opacity = 1;
+        let value = 1 - distance / threshold;
+        this.scale = 1 + value * 3;
         this.active = true
     }
 
     resetActive() {
-        this.opacity = 0.1;
+        this.scale = this.initScale;
     }
 
     update() {

@@ -10,6 +10,7 @@ export default class GridLine {
     this.scale = options.scale || 1;
     this.opacity = options.opacity || 0;
     this.rotation = options.rotation || 0;
+    this.velocity = 1;
     this.active = false;
 
     this.initRotation = options.rotation || 0;
@@ -23,7 +24,7 @@ export default class GridLine {
 
     let startPoint = {
       x: this.position[0],
-      y: this.position[1]
+      y: this.position[1] - this.height / 2
     };
     let endPoint = {
       x: startPoint.x,
@@ -51,17 +52,19 @@ export default class GridLine {
   }
 
   setActive(distance, threshold) {
+    this.velocity = 1.5;
     this.rotation = this.rotation + 1;
     this.active = true
   }
 
   resetActive() {
+    this.velocity = 1;
     this.rotation = this.initRotation;
   }
 
   update() {
-    this.rotation += 0.01;
-    this.initRotation += 0.01;
+    this.rotation += 0.01 * this.velocity;
+    this.initRotation += 0.01 * this.velocity;
     this.render();
   }
 }

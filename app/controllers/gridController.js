@@ -1,6 +1,8 @@
 import {vec2} from 'gl-matrix';
 import GridParticle from '../shapes/gridParticle';
 import GridLine from '../shapes/gridLine';
+import GridRect from '../shapes/gridRect';
+import GridPoint from '../shapes/gridPoint';
 
 
 export default class gridController {
@@ -10,10 +12,20 @@ export default class gridController {
     // Grid
     this.width = options.width;
     this.height = options.height;
-    this.numberByRange = options.numberByRange || 30;
+    this.maxWidth = options.maxWidth;
+    this.maxHeight = options.maxHeight;
+    this.maxNumberByRangeX = options.maxXNumberByRange - 1 || 29;
+    this.maxNumberByRangeY = options.maxYNumberByRange - 1 || 11;
     this.positions = [];
     this.wavesArr = [];
-    this.distanceThresold = 30;
+
+    // Prepare number Step X
+    this.numberCoeffX = Math.floor(this.maxWidth / this.maxNumberByRangeX);
+    this.numberStepX = Math.floor(this.width/this.numberCoeffX);
+
+    // Prepare number Step Y
+    this.numberCoeffY = Math.floor(this.maxHeight / this.maxNumberByRangeY);
+    this.numberStepY = Math.floor(this.height / this.numberCoeffY);
 
     // Patterns
     this.patterns = [];
@@ -21,12 +33,28 @@ export default class gridController {
     this.particlePattern = {
       type: 'particle',
       isActive: false,
+      distanceThreshold: 30,
       data: []
     };
 
     this.linePattern = {
       type: 'line',
       isActive: false,
+      distanceThreshold: 30,
+      data: []
+    };
+
+    this.rectPattern = {
+      type: 'rect',
+      isActive: false,
+      distanceThreshold: 30,
+      data: []
+    };
+
+    this.pointPattern = {
+      type: 'point',
+      isActive: false,
+      distanceThreshold: 60,
       data: []
     };
 
@@ -37,13 +65,17 @@ export default class gridController {
   }
 
   setGrid() {
-    let step = this.width / this.numberByRange;
 
-    for(let x = 0; x < this.width; x += step ){
-      for(let y = 0; y < this.height; y += step ){
+    // Loop by Step
+    let stepX = Math.floor(this.width / this.numberStepX);
+    let stepY = Math.floor(this.height / this.numberStepY);
+
+    console.log(this.numberStepX);
+    for(let x = 0; x < this.width; x += stepX ){
+      for(let y = 0; y < this.height; y += stepY ){
         let positionObj = {
-          x: x + (window.innerWidth - this.width) / 2 + step / 2,
-          y: y +(window.innerHeight - this.height) / 2  + step / 4
+          x: x + (window.innerWidth - (this.numberStepX * stepX)) / 2,
+          y: y + (window.innerHeight - (this.numberStepY * stepY)) / 2
         };
         this.positions.push( positionObj )
       }
@@ -54,17 +86,21 @@ export default class gridController {
     this.positions.forEach((position) => {
       this.setParticlePattern(position);
       this.setLinePattern(position);
+      this.setRectPattern(position);
+      this.setPointPattern(position);
     });
 
     this.patterns.push(this.particlePattern);
     this.patterns.push(this.linePattern);
+    this.patterns.push(this.rectPattern);
+    this.patterns.push(this.pointPattern);
   }
 
   setParticlePattern(position) {
     let particle = new GridParticle(this.ctx, {
       position: vec2.fromValues(position.x, position.y),
       radius: 4,
-      opacity: 0.3
+      opacity: 1
     });
     // Push
     this.particlePattern.data.push(particle);
@@ -80,6 +116,26 @@ export default class gridController {
     });
     // Push
     this.linePattern.data.push(line);
+  }
+
+  setRectPattern(position) {
+    let rect = new GridRect(this.ctx, {
+      position: vec2.fromValues(position.x, position.y),
+      size: 8,
+      opacity: 0.4
+    });
+    // Push
+    this.rectPattern.data.push(rect);
+  }
+
+  setPointPattern(position) {
+    let point = new GridPoint(this.ctx, {
+      position: vec2.fromValues(position.x, position.y),
+      radius: 1,
+      opacity: 1
+    });
+    // Push
+    this.pointPattern.data.push(point);
   }
 
   setNewCurrentPattern() {
@@ -110,8 +166,8 @@ export default class gridController {
         let distance = Math.sqrt(Math.pow(point.position[0] - el.position[0], 2) + Math.pow(point.position[1] - el.position[1] , 2));
 
         if(el.active === false) {
-          if (distance < this.distanceThresold) {
-            el.setActive(distance, this.distanceThresold);
+          if (distance < this.currentPattern.distanceThreshold) {
+            el.setActive(distance, this.currentPattern.distanceThreshold, point.position);
           } else {
             el.resetActive();
           }

@@ -9,10 +9,21 @@ export default class waveController {
     // Params
     this.width = options.width;
     this.height = options.height;
-    this.wavesPointsLength = 30;
+    this.maxWidth = options.maxWidth;
+    this.maxWavesPointsLength = options.maxXWavesPointsLength - 1 || 29;
     this.wavesAmplitude = 400;
     this.wavesTimestamp = 0;
     this.wavesArr = [];
+
+    // Prepare number Step X
+    this.numberCoeffX = Math.floor(this.maxWidth / this.maxWavesPointsLength);
+    this.numberStepX = Math.floor(this.width / this.numberCoeffX);
+
+    // RECALC WIDTH
+    let stepX = Math.floor(this.width / this.numberStepX);
+    this.width = this.numberStepX * stepX;
+    this.gapBetweenPoints = stepX / 2;
+
 
     // Noise
     this.simplex = new SimplexNoise();
@@ -22,7 +33,8 @@ export default class waveController {
     let wave = new Wave(this.ctx, {
       width: this.width,
       height: this.height,
-      quantity: this.wavesPointsLength,
+      quantity: this.numberStepX,
+      gapBetweenPoints: this.gapBetweenPoints,
       amplitude: this.wavesAmplitude,
       timestamp: this.wavesTimestamp,
       noise: this.simplex,

@@ -1,6 +1,5 @@
-import Dat from 'dat-gui';
-import NumberUtils from './utils/number-utils';
-import {vec2} from 'gl-matrix';
+import debounce from "./utils/debounce";
+import Stats from 'stats.js';
 import { colorManager } from './utils/colorManager';
 
 /* IMPORT CLASSES */
@@ -12,20 +11,25 @@ import Background from './shapes/background'
 export default class App {
 
     constructor() {
-        // Width / Height
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        // Size
+        this.elementsMediaQuery = 1340;
+        this.elementsMaxWidth = 1120;
+        this.elementsMaxHeight = 620;
+        this.calcElementsSizes();
 
         // Update
         this.updateActive = true;
         this.DELTA_TIME = 0;
         this.LAST_TIME = Date.now();
 
+        // Stats
+        this.stats = new Stats();
+        this.stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+        document.body.appendChild( this.stats.dom );
+
         this.initCanvas();
         this.initAudio();
-        this.initBackground();
-        this.initGrid();
-        this.initWaves();
+        this.render();
         this.bindEvents();
         this.startRAF();
     }
@@ -43,10 +47,24 @@ export default class App {
         // Set context
         this.ctx = this.canvas.getContext('2d');
         // Set Size
+        this.setCanvasWidth();
+    }
+
+    setCanvasWidth() {
+        // Set Size
         this.canvas.width = this.width;
         this.canvas.height = this.height;
     }
 
+
+    /**
+     * Render
+     */
+    render() {
+        this.initBackground();
+        this.initGrid();
+        this.initWaves();
+    }
 
     /**
      * initAudio
@@ -62,43 +80,70 @@ export default class App {
             },
             snareParams: {
                 timestamp: 0,
-                averageThresold: 98,
-                timeThresold: 250,
+                averageThresold: 95,
+                timeThresold: 100,
                 isPlaying: false
             }
         })
     }
 
 
-  /**
-   * initBackground
-   */
-  initBackground() {
-      this.background = new Background(this.ctx, {
-          position: [0, 0],
-          width: this.width,
-          height: this.height
-      });
-  }
+    /**
+     * initBackground
+     */
+    initBackground() {
+        this.background = new Background(this.ctx, {
+            position: [0, 0],
+            width: this.width,
+            height: this.height,
+        });
+    }
+
 
     /**
      * initWaves
      */
     initWaves() {
         this.waveController = new WaveController(this.ctx, {
-            width: this.width * .8,
-            height: this.height * .8
+            width: this.elWidth,
+            height: this.elHeight,
+            maxWidth: this.elementsMaxWidth,
+            maxXWavesPointsLength: 30
         });
     }
+
 
     /**
      * initGrid
      */
     initGrid() {
         this.gridController = new GridController(this.ctx, {
-            width: this.width * .8,
-            height: this.height * .8
+            width: this.elWidth,
+            height: this.elHeight,
+            maxWidth: this.elementsMaxWidth,
+            maxHeight: this.elementsMaxHeight,
+            maxXNumberByRange: 30,
+            maxYNumberByRange: 12
         });
+    }
+
+
+    /**
+     * Calc Elements Size
+     */
+    calcElementsSizes() {
+        // Width / Height
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+
+        // Elements Waves + Grid
+        if (this.width > this.elementsMediaQuery) {
+            this.elWidth = this.elementsMaxWidth;
+            this.elHeight = this.elementsMaxHeight;
+        } else {
+            this.elWidth = this.width * .8;
+            this.elHeight = this.height * .8;
+        }
     }
 
 
@@ -106,25 +151,19 @@ export default class App {
      * bindEvents
      */
     bindEvents() {
-        window.addEventListener('resize', this.onResize.bind(this) );
+        /* Resize function with debounce*/
+        window.addEventListener('resize', debounce( () => {
+            this.onResize()
+        }, 100));
     }
 
 
     /**
-     * Render
+     * Start RAF
      */
-    render() {
-
-    }
-
-  /**
-   * Start RAF
-   */
-  startRAF() {
+    startRAF() {
         // Update
         if(this.updateActive) {
-            // Render
-            this.render();
             // Do Update
             this.update();
         } else {
@@ -133,10 +172,12 @@ export default class App {
         }
     }
 
+
     /**
      * update
      */
     update() {
+        this.stats.begin();
         // CLEAR CANVAS
         this.ctx.clearRect(0,0, this.width, this.height);
 
@@ -183,6 +224,8 @@ export default class App {
         // GRID CONTROLLER
         this.gridController.update();
 
+        this.stats.end();
+
         // RAF
         this.raf = requestAnimationFrame(this.update.bind(this));
     }
@@ -211,12 +254,14 @@ export default class App {
     }
 
 
-
     /**
      * onResize
      */
     onResize() {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        // SIZE
+        this.calcElementsSizes();
+        this.setCanvasWidth();
+        // RENDER
+        this.render();
     }
 }

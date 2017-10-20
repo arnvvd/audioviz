@@ -44,7 +44,7 @@ export default class AudioManager {
 
         this.kickFilter.type = "lowpass";
         this.kickFilter.frequency.value = 100;
-        this.kickFilter.gain.value = 25;
+        this.kickFilter.gain.value = 20;
 
         this.kickFrequencyData = new Uint8Array(this.kickAnalyser.frequencyBinCount);
 
@@ -113,13 +113,27 @@ export default class AudioManager {
         this.audioSource.connect(this.snareFilter);
         this.snareFilter.connect(this.snareAnalyser);
         // Destination
-        this.audioSource.connect(this.audioCtx.destination);
+        this.analyser.connect(this.audioCtx.destination);
     }
 
 
     play() {
         this.audioSource.start();
     }
+
+
+    // connectSnareFilter() {
+    //     this.snareFilter.connect(this.audioCtx.destination);
+    // }
+    // deconnectSnareFilterr() {
+    //     this.analyser.disconnect(this.audioCtx.destination);
+    // }
+    // connectAnalyser() {
+    //     this.analyser.connect(this.audioCtx.destination);
+    // }
+    // deconnectAnalyser() {
+    //     this.analyser.disconnect(this.audioCtx.destination);
+    // }
 
 
     getAverage(analyser, frequencyData) {

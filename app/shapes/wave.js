@@ -7,10 +7,12 @@ export default class Wave {
     // Options
     this.width = options.width;
     this.height = options.height;
+    this.maxWidth = options.maxWidth;
     this.quantity = options.quantity || 50;
     this.amplitude = options.amplitude || 300;
     this.timestamp = options.timestamp;
     this.noise = options.noise;
+    this.gapBetweenPoints = options.gapBetweenPoints;
     this.step = Math.PI / this.quantity;
     this.pointsArr = [];
     this.isPlayed = false;
@@ -32,6 +34,7 @@ export default class Wave {
         waveAmplitude: this.amplitude,
         waveWidth: this.width,
         waveHeight: this.height,
+        gapBetweenPoints: this.gapBetweenPoints,
         noise: this.noise
       });
       // Push Point
